@@ -1,6 +1,7 @@
 # oisuite
 
 Your number #1 tool to managing your algo questions!
+This software only works on UNIX-based operating systems (macOS, Linux, BSD, etc.)
 
 - [x] Project generation
 - [x] Quick project template updates
