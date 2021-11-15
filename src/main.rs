@@ -1,4 +1,5 @@
 use std::env;
+use std::fs;
 use std::process;
 use std::process::Command;
 use oisuite::throw_lerror;
@@ -23,26 +24,14 @@ fn main() {
             let path = env::home_dir().unwrap();
             let home: &str = path.to_str().unwrap();
 
-            Command::new("mkdir")
-                .arg(format!("{}/oi", home))
-                .spawn()
-                .expect("Failed to install");
-
-            Command::new("mkdir")
-                .arg(format!("{}/oi/.oisuite/", home))
-                .spawn()
-                .expect("Failed to install");
-
-            Command::new("mkdir")
-                .arg(format!("{}/oi/projects/", home))
-                .spawn()
-                .expect("Failed to install");
+            fs::create_dir_all(format!("{}/oi/projects", home));
+            fs::create_dir_all(format!("{}/oi/.oisuite", home));
 
             Command::new("git")
                 .arg("clone")
                 .arg("https://www.github.com/querterdesu/oisuite-files")
                 .arg(format!("{}/oi/.oisuite/project", home))
-                .spawn()
+                .status()
                 .expect("Failed to generate files");
 
         }
@@ -55,29 +44,23 @@ fn main() {
             }
             let name = &args[2];
 
-            Command::new("cp")
-                .arg("-r")
-                .arg(format!("{}/oi/.oisuite/project", home))
-                .arg(format!("{}", name))
-                .spawn()
-                .expect("Unable to gen file");
+            fs::create_dir_all(format!("{}", name));
+
+            for file in fs::read_dir(format!("{}/oi/.oisuite/project", home)).unwrap() {
+                fs::copy(file.as_ref().unwrap().path(), format!("{}/{}", name, file.unwrap().file_name().into_string().unwrap()));
+            }
         },
         "update" => {
             let path = env::home_dir().unwrap();
             let home: &str = path.to_str().unwrap();
 
-            Command::new("rm")
-                .arg("-f")
-                .arg("-r")
-                .arg(format!("{}/oi/.oisuite/project", home))
-                .spawn()
-                .expect("Failed to purge old boilerplate files");
+            fs::remove_dir_all(format!("{}/oi/.oisuite/project", home));
 
             Command::new("git")
                 .arg("clone")
                 .arg("https://www.github.com/querterdesu/oisuite-files")
                 .arg(format!("{}/oi/.oisuite/project", home))
-                .spawn()
+                .status()
                 .expect("Failed to generate files");
         },
         "test" => {},
