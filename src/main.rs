@@ -19,6 +19,9 @@ fn main() {
         "install" => {
             process::Command::new("git")
                 .arg("clone")
+                .arg("https://github.com/querterdesu/oisuite-files")
+                .arg("~/oi/.oisuite")
+                .expect("Error executing command!")
         },
         "new" => {},
         "test" => {},
