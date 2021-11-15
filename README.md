@@ -11,5 +11,3 @@ Your number #1 tool to managing your algo questions!
 ## License
 
 This software is available under the MIT license.
-
-**Made with ❤️ by querterdesu**
