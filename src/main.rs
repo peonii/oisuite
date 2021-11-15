@@ -62,26 +62,6 @@ fn main() {
                 .spawn()
                 .expect("Unable to gen file");
         },
-        "run" => {
-            Command::new("g++")
-                .arg("main.cpp")
-                .arg("-o")
-                .arg("main")
-                .spawn()
-                .expect("Unable to compile");
-
-            Command::new("./main")
-                .spawn()
-                .expect("Unable to run file");
-        },
-        "build" => {
-            Command::new("g++")
-                .arg("main.cpp")
-                .arg("-o")
-                .arg("main")
-                .spawn()
-                .expect("Unable to compile");
-        },
         "test" => {},
         _ => throw_lerror("Invalid argument!")
     };
