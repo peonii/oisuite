@@ -5,7 +5,7 @@ use oisuite::throw_lerror;
 use oisuite::print_help_text;
 use std::io;
 
-#[warn(deprecated)]
+//#[warn(deprecated)]
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -61,6 +61,24 @@ fn main() {
                 .arg(format!("{}", name))
                 .spawn()
                 .expect("Unable to gen file");
+        },
+        "update" => {
+            let path = env::home_dir().unwrap();
+            let home: &str = path.to_str().unwrap();
+
+            Command::new("rm")
+                .arg("-f")
+                .arg("-r")
+                .arg(format!("{}/oi/.oisuite/project", home))
+                .spawn()
+                .expect("Failed to purge old boilerplate files");
+
+            Command::new("git")
+                .arg("clone")
+                .arg("https://www.github.com/querterdesu/oisuite-files")
+                .arg(format!("{}/oi/.oisuite/project", home))
+                .spawn()
+                .expect("Failed to generate files");
         },
         "test" => {},
         _ => throw_lerror("Invalid argument!")
