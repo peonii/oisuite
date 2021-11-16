@@ -7,7 +7,7 @@ This software only works on UNIX-based operating systems (macOS, Linux, BSD, etc
 - [x] Quick project template updates
 - [x] Good template with functional Makefile
 - [ ] Custom config `oisuite.yml`
-- [ ] Testing capabilities
+- [x] Testing capabilities
 
 ## Dependencies
 
