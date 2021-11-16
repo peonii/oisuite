@@ -164,7 +164,7 @@ fn main() {
                         let expected = String::from_utf8(expectedf).unwrap();
 
 
-                        if stdout_output == expected {
+                        if stdout_output.trim() == expected.trim() {
                             done[i-2] = true;
                             passed += 1;
                             println!("Testcase {} succeeded!", i-1);
@@ -186,7 +186,7 @@ fn main() {
                     let expectedf = fs::read(format!("tests/{}.out", i)).unwrap();
                     let expected = String::from_utf8(expectedf).unwrap();
 
-                    if stdout_output == expected {
+                    if stdout_output.trim() == expected.trim() {
                         println!("Testcase {} succeeded!", i);
                         passed += 1;
                     } else {
