@@ -117,7 +117,8 @@ fn main() {
             }
             fs::remove_file("gent");
             fs::remove_file("brute");
-            println!("Successfully generated {}{}/{}{} testcases.", color::Fg(color::Green), working, limit, color::Fg(color::Reset))
+            println!("Successfully generated {}{}/{}{} testcases.", color::Fg(color::Green), working, limit, color::Fg(color::Reset));
+            fs::write(format!("0\n{}", limit), "tests/testinfo");
         },
         "test" => {
             println!("Compiling {}{}algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
