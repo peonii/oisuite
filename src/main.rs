@@ -93,6 +93,8 @@ fn main() {
                 .expect("Failed to generate testcase :(");
 
             let mut working: i32 = 0;
+            fs::write(String::from("tests/testinfo"), format!("0\n{}", limit));
+            fs::write("test", "ttt");
 
             for i in (1..limit+1) {
 
@@ -118,7 +120,6 @@ fn main() {
             fs::remove_file("gent");
             fs::remove_file("brute");
             println!("Successfully generated {}{}/{}{} testcases.", color::Fg(color::Green), working, limit, color::Fg(color::Reset));
-            fs::write(format!("0\n{}", limit), "tests/testinfo");
         },
         "test" => {
             println!("Compiling {}{}algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
