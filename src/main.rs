@@ -94,7 +94,6 @@ fn main() {
 
             let mut working: i32 = 0;
             fs::write(String::from("tests/testinfo"), format!("0\n{}", limit));
-            fs::write("test", "ttt");
 
             for i in (1..limit+1) {
 
