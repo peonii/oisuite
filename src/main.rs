@@ -69,6 +69,10 @@ fn main() {
             }
 
             let limit: i32 = args[2].parse().unwrap();
+
+            fs::remove_dir_all("tests");
+            fs::create_dir("tests");
+
             for i in (0..limit) {
                 Command::new("g++")
                     .arg("generate_tests.cpp")
@@ -89,6 +93,9 @@ fn main() {
                     .arg("gent")
                     .status()
                     .expect("a");
+
+                fs::remove_file("gent");
+                
 
                 println!("Generated testcase {} successfully!", i+1);
             }
