@@ -26,6 +26,8 @@ You can install oisuite by cloning this repository, and follow the following ste
 ```sh
 $ rustup install nightly
 $ rustup default nightly
+$ rustup update
+$ mkdir ~/bin
 ```
 - Add `~/bin` to your PATH
 - Run `install.sh`
