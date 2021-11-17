@@ -21,6 +21,12 @@ For oisuite, you will need:
 ## Installation
 
 You can install oisuite by cloning this repository, and follow the following steps:
+- Install [rustup](https://rustup.rs/)
+- Change the rust compiler to nightly:
+```sh
+rustup install nightly
+rustup default nightly
+```
 - Add `~/bin` to your PATH
 - Run `install.sh`
 
