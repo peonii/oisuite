@@ -6,8 +6,12 @@ This software only works on UNIX-based operating systems (macOS, Linux, BSD, etc
 - [x] Project generation
 - [x] Quick project template updates
 - [x] Good template with functional Makefile
-- [ ] Custom config `oisuite.yml`
 - [x] Testing capabilities
+- [ ] Timing answers and time requirements
+- [ ] Test packages
+- [ ] Test package grouping
+- [ ] Custom config `oisuite.yml`
+- [ ] Multithreading test generation / execution
 
 ## Dependencies
 
