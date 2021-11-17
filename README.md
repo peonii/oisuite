@@ -8,7 +8,7 @@ This software only works on UNIX-based operating systems (macOS, Linux, BSD, etc
 - [x] Good template with functional Makefile
 - [x] Testing capabilities
 - [ ] Timing answers and time requirements
-- [ ] Test packages
+- [x] Test packages
 - [ ] Test package grouping
 - [ ] Custom config `oisuite.yml`
 - [ ] Multithreading test generation / execution
