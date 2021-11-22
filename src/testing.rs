@@ -126,30 +126,17 @@ pub fn test(args: &Vec<String>) {
                 }
             }
             if can_exec {
-                let mut rmain = Command::new("./main");
-                rmain.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i-1)).unwrap());
-                let before = Instant::now();
-                let output = rmain.output().expect("Failed running algorithm!");
-                let after = Instant::now();
-                let stdout_output = String::from_utf8(output.stdout).unwrap();
-                let tdiff = after.duration_since(before).as_millis();
-
-                let expectedf = fs::read(format!("tests/{}/{}.out", packname, i-1)).unwrap();
-                let expected = String::from_utf8(expectedf).unwrap();
-
-
-                if stdout_output.trim() == expected.trim() {
-                    if tdiff <= timelimit {
+                let result = test_tc(&mut log, packname, i - 1, timelimit);
+                match result {
+                    0 => {
                         done[i-2] = true;
                         passed += 1;
-                        println!("Testcase {} succeeded ({}ms)!", i-1, tdiff);
-                    } else {
-                        println!("Time for testcase {} exceeded! ({}/{}ms)", i-1, tdiff, timelimit);
-                        log += format!("\n\nTestcase {}: Time limit exceeded ({}/{}ms)", i-1, tdiff, timelimit).as_str();
+                    },
+                    1 => {},
+                    2 => {},
+                    _ => {
+                        throw_error("Something went wrong...");
                     }
-                } else {
-                    println!("Testcase {} failed ({}ms)!", i-1, tdiff);
-                    log += format!("\n\nTestcase {}: Got \"{}\", expected \"{}\"", i-1, stdout_output, expected).as_str();
                 }
             } else {
                 println!("Testcase {} skipped because testcase {} failed", i-1, req)
@@ -163,29 +150,14 @@ pub fn test(args: &Vec<String>) {
         let mut log = String::from("");
         for k in 1..amount+1 {
             let i: usize = k as usize;
-            let mut rmain = Command::new("./main");
-            rmain.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i)).unwrap());
-            let before = Instant::now();
-            let output = rmain.output().expect("Failed running algorithm!");
-            let after = Instant::now();
-            let stdout_output = String::from_utf8(output.stdout).unwrap();
-            let tdiff = after.duration_since(before).as_millis();
-
-            let expectedf = fs::read(format!("tests/{}/{}.out", packname, i)).unwrap();
-            let expected = String::from_utf8(expectedf).unwrap();
-
-
-            if stdout_output.trim() == expected.trim() {
-                if tdiff <= timelimit {
-                    passed += 1;
-                    println!("Testcase {} succeeded ({}ms)!", i, tdiff);
-                } else {
-                    println!("Time for testcase {} exceeded! ({}/{}ms)", i, tdiff, timelimit);
-                    log += format!("\n\nTestcase {}: Time limit exceeded ({}/{}ms)", i, tdiff, timelimit).as_str();
+            let result = test_tc(&mut log, packname, i, timelimit);
+            match result {
+                0 => passed += 1,
+                1 => {},
+                2 => {},
+                _ => {
+                    throw_error("Something went wrong...");
                 }
-            } else {
-                println!("Testcase {} failed ({}ms)!", i, tdiff);
-                log += format!("\n\nTestcase {}: Got \"{}\", expected \"{}\"", i, stdout_output, expected).as_str();
             }
         }
         match fs::write(format!("tests/{}/log", packname), log) {
@@ -199,3 +171,33 @@ pub fn test(args: &Vec<String>) {
     };
     println!("Testing {} ended successfully. {}/{} testcases succeeded", packname, passed, amount);
 }
+
+
+// Return value: 0 = success, 1 = error, 2 = time limit exceeded
+fn test_tc(log: &mut String, packname: &str, index: usize, timelimit: u128) -> i32 {
+    let mut rmain = Command::new("./main");
+    rmain.stdin(fs::File::open(format!("tests/{}/{}.in", packname, index)).unwrap());
+    let before = Instant::now();
+    let output = rmain.output().expect("Failed running algorithm!");
+    let after = Instant::now();
+    let stdout_output = String::from_utf8(output.stdout).unwrap();
+    let tdiff = after.duration_since(before).as_millis();
+
+    let expectedf = fs::read(format!("tests/{}/{}.out", packname, index)).unwrap();
+    let expected = String::from_utf8(expectedf).unwrap();
+
+    if stdout_output.trim() == expected.trim() {
+        if tdiff <= timelimit {
+            println!("{}✅ Testcase {} passed!{}", color::Fg(color::Green), index, color::Fg(color::Reset));
+            0
+        } else {
+            println!("{}⚠️ Time for testcase {} exceeded!{}", color::Fg(color::Yellow), index, color::Fg(color::Reset)); 
+            log.push_str(format!("\n\nTestcase {}: Time limit exceeded ({}/{}ms)", index, tdiff, timelimit).as_str());
+            2
+        }
+    } else {
+        println!("{}❌ Testcase {} failed!{}", color::Fg(color::Red), index, color::Fg(color::Reset));
+        log.push_str(format!("\n\nTestcase {}: Got \"{}\", expected \"{}\"", index, stdout_output, expected).as_str());
+        1
+    }
+} 
