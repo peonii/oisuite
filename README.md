@@ -23,6 +23,21 @@ For oisuite, you will need:
 
 ## Installation
 
+### Installing via cargo
+
+You can install oisuite via `cargo`! Follow the following steps:
+- Install [rustup](https://rustup.rs)
+- Change the rust compiler to nightly:
+```sh
+$ rustup install nightly
+$ rustup update
+$ rustup default nightly
+```
+- Add `~/.cargo/bin` to your PATH
+- Run `cargo install oisuite`
+
+### Building from scratch
+
 You can install oisuite by cloning this repository, and follow the following steps:
 - Install [rustup](https://rustup.rs/)
 - Change the rust compiler to nightly:
