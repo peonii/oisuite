@@ -22,3 +22,8 @@ pub fn throw_lerror(message: &str) {
 
     process::exit(1);
 }
+
+pub fn throw_error(message: &str) {
+    println!("ERROR: {}", message);
+    process::exit(1);
+}

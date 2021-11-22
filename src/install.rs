@@ -1,14 +1,22 @@
-use std::env;
 use std::fs;
 use std::process;
+use crate::*;
 extern crate yaml_rust;
 use yaml_rust::{YamlLoader};
 pub fn install() {
-    let path = env::home_dir().unwrap();
+    let path = home::home_dir().unwrap();
     let home: &str = path.to_str().unwrap();
 
-    fs::create_dir_all(format!("{}/oi/projects", home));
-    fs::create_dir_all(format!("{}/oi/.oisuite", home));
+    match fs::create_dir_all(format!("{}/oi/projects", home)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Could not create directory!"),
+    };
+
+    match fs::create_dir_all(format!("{}/oi/.oisuite", home)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Could not create directory!"),
+    };
+
     let conf = "##############################
 # OISUITE CONFIGURATION FILE #
 ##############################
@@ -20,27 +28,32 @@ default_repo: https://www.github.com/querterdesu/oisuite-files
 # Made by Querter-chan#6666";
     fs::write(format!("{}/oi/.oisuite/config.yml", home), conf).expect("Unable to write config file!");
 
-    process::Command::new("git")
-        .arg("clone")
-        .arg("https://www.github.com/querterdesu/oisuite-files")
-        .arg(format!("{}/oi/.oisuite/project", home))
-        .status()
-        .expect("Failed to generate files");
+    clone_repo("https://www.github.com/querterdesu/oisuite-files");
 }
 
 pub fn update() {
-    let path = env::home_dir().unwrap();
+    let path = home::home_dir().unwrap();
     let home: &str = path.to_str().unwrap();
     let config_path = format!("{}/oi/.oisuite/config.yml", home);
     let config_str = fs::read_to_string(config_path).expect("Unable to read config file!");
     let config = YamlLoader::load_from_str(&config_str).unwrap();
     let default_repo = config[0]["default_repo"].as_str().unwrap();
 
-    fs::remove_dir_all(format!("{}/oi/.oisuite/project", home));
+    match fs::remove_dir_all(format!("{}/oi/.oisuite/project", home)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Could not remove directory!"),
+    };
+
+    clone_repo(default_repo);
+}
+
+fn clone_repo(repo: &str) {
+    let path = home::home_dir().unwrap();
+    let home: &str = path.to_str().unwrap();
 
     process::Command::new("git")
         .arg("clone")
-        .arg(format!("{}", default_repo))
+        .arg(format!("{}", repo))
         .arg(format!("{}/oi/.oisuite/project", home))
         .status()
         .expect("Failed to generate files");

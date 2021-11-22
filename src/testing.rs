@@ -1,6 +1,4 @@
-use std::env;
 use std::fs;
-use std::process;
 use std::process::Command;
 use crate::*;
 use termion::color;
@@ -16,8 +14,14 @@ pub fn generate(args: &Vec<String>) {
     let timelimit: u128 = args[3].parse::<u128>().unwrap();
     let limit: i32 = args[4].parse().unwrap();
 
-    fs::remove_dir_all(format!("tests/{}", packname));
-    fs::create_dir(format!("tests/{}", packname));
+    match fs::remove_dir_all(format!("tests/{}", packname)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to remove tests!"),
+    };
+    match fs::create_dir(format!("tests/{}", packname)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to create test directory!"),
+    };
 
     println!("Compiling {}{}test generator{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
 
@@ -37,31 +41,46 @@ pub fn generate(args: &Vec<String>) {
         .expect("Failed to generate testcase :(");
 
     let mut working: i32 = 0;
-    fs::write(String::from(format!("tests/{}/testinfo", packname)), format!("0\n{}\n{}", timelimit, limit));
+    match fs::write(String::from(format!("tests/{}/testinfo", packname)), format!("0\n{}\n{}", timelimit, limit)) {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to write testinfo!"),
+    };
 
-    for i in (1..limit+1) {
+    for i in 1..limit+1 {
 
         let mut outp_i = Command::new("./gent");
 
-        let mut temp_i = outp_i.output().expect("uwu");
-        let mut stdout_i = String::from_utf8(temp_i.stdout).unwrap();
+        let temp_i = outp_i.output().expect("uwu");
+        let stdout_i = String::from_utf8(temp_i.stdout).unwrap();
 
-        fs::write(format!("tests/{}/{}.in", packname, i), stdout_i);
+        match fs::write(format!("tests/{}/{}.in", packname, i), stdout_i) {
+            Ok(_) => {},
+            Err(_) => throw_error("Failed to write testcase!"),
+        };
 
         let mut outp_o = Command::new("./brute");
 
         outp_o.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i)).unwrap());
 
-        let mut temp_o = outp_o.output().expect("uwu2");
-        let mut stdout_o = String::from_utf8(temp_o.stdout).unwrap();
+        let temp_o = outp_o.output().expect("uwu2");
+        let stdout_o = String::from_utf8(temp_o.stdout).unwrap();
 
-        fs::write(format!("tests/{}/{}.out", packname, i), stdout_o);
+        match fs::write(format!("tests/{}/{}.out", packname, i), stdout_o) {
+            Ok(_) => {},
+            Err(_) => throw_error("Failed to write testcase!"),
+        };
 
         println!("{}🗸 Generated testcase {} successfully!{}", color::Fg(color::Green), i, color::Fg(color::Reset));
         working += 1;
     }
-    fs::remove_file("gent");
-    fs::remove_file("brute");
+    match fs::remove_file("gent") {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to remove generator!"),
+    };
+    match fs::remove_file("brute") {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to remove brute force algorithm!"),
+    };
     println!("Successfully generated {}{}/{}{} testcases.", color::Fg(color::Green), working, limit, color::Fg(color::Reset));
 }
 
@@ -83,7 +102,7 @@ pub fn test(args: &Vec<String>) {
     let testinfo = fs::read(format!("tests/{}/testinfo", packname)).unwrap();
     let detailedinfo = String::from_utf8(testinfo).unwrap();
 
-    let mut split = detailedinfo.lines();
+    let split = detailedinfo.lines();
     let split_v: Vec<&str> = split.collect();
 
     let advanced_check = &split_v[0];
@@ -96,7 +115,7 @@ pub fn test(args: &Vec<String>) {
         let mut done = vec![false; amount as usize];
 
         let mut log = String::from("");
-        for k in (2..amount+2) {
+        for k in 2..amount+2 {
             let i: usize = k as usize;
             let req = split_v[i+1];
             let mut can_exec = true;
@@ -136,10 +155,13 @@ pub fn test(args: &Vec<String>) {
                 println!("Testcase {} skipped because testcase {} failed", i-1, req)
             }
         }
-        fs::write(format!("tests/{}/log", packname), log);
+        match fs::write(format!("tests/{}/log", packname), log) {
+            Ok(_) => {},
+            Err(_) => throw_error("Failed to write log!"),
+        };
     } else {
         let mut log = String::from("");
-        for k in (1..amount+1) {
+        for k in 1..amount+1 {
             let i: usize = k as usize;
             let mut rmain = Command::new("./main");
             rmain.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i)).unwrap());
@@ -166,8 +188,14 @@ pub fn test(args: &Vec<String>) {
                 log += format!("\n\nTestcase {}: Got \"{}\", expected \"{}\"", i, stdout_output, expected).as_str();
             }
         }
-        fs::write(format!("tests/{}/log", packname), log);
+        match fs::write(format!("tests/{}/log", packname), log) {
+            Ok(_) => {},
+            Err(_) => throw_error("Failed to write log!"),
+        };
     }
-    fs::remove_file("main");
+    match fs::remove_file("main") {
+        Ok(_) => {},
+        Err(_) => throw_error("Failed to remove algorithm!"),
+    };
     println!("Testing {} ended successfully. {}/{} testcases succeeded", packname, passed, amount);
 }
