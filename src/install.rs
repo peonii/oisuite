@@ -9,10 +9,15 @@ pub fn install() {
 
     fs::create_dir_all(format!("{}/oi/projects", home));
     fs::create_dir_all(format!("{}/oi/.oisuite", home));
-    let conf = "
-    # Project config
-    default_repo: https://www.github.com/querterdesu/oisuite-files 
-    ";
+    let conf = "##############################
+# OISUITE CONFIGURATION FILE #
+##############################
+
+# Default project configuration
+default_repo: https://www.github.com/querterdesu/oisuite-files
+
+
+# Made by Querter-chan#6666";
     fs::write(format!("{}/oi/.oisuite/config.yml", home), conf).expect("Unable to write config file!");
 
     process::Command::new("git")
