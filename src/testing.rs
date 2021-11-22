@@ -26,17 +26,23 @@ pub fn generate(args: &Vec<String>) {
     println!("Compiling {}{}test generator{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
 
     Command::new("g++")
+        .arg("-O3")
+        .arg("-static")
         .arg("generate_tests.cpp")
         .arg("-o")
         .arg("gent")
+        .arg("-std=c++17")
         .status()
         .expect("Failed to generate testcase :(");
 
     println!("Compiling {}{}testing algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
     Command::new("g++")
+        .arg("-O3")
+        .arg("-static")
         .arg("brute.cpp")
         .arg("-o")
         .arg("brute")
+        .arg("-std=c++17")
         .status()
         .expect("Failed to generate testcase :(");
 
@@ -93,9 +99,12 @@ pub fn test(args: &Vec<String>) {
     println!("Compiling {}{}algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
 
     Command::new("g++")
+        .arg("-O3")
+        .arg("-static")
         .arg("main.cpp")
         .arg("-o")
         .arg("main")
+        .arg("-std=c++17")
         .status()
         .expect("Failed to compile :(");
 
