@@ -1,8 +1,6 @@
 use std::fs;
 use std::process::Command;
 use crate::*;
-use termion::color;
-use termion::style;
 use std::time::Instant;
 
 pub fn generate(args: &Vec<String>) {
@@ -23,7 +21,7 @@ pub fn generate(args: &Vec<String>) {
         Err(_) => throw_error("Failed to create test directory!"),
     };
 
-    println!("Compiling {}{}test generator{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
+    println!("Compiling test generator...");
 
     Command::new("g++")
         .arg("-O3")
@@ -35,50 +33,9 @@ pub fn generate(args: &Vec<String>) {
         .status()
         .expect("Failed to generate testcase :(");
 
-    println!("Compiling {}{}testing algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
-    Command::new("g++")
-        .arg("-O3")
-        .arg("-static")
-        .arg("brute.cpp")
-        .arg("-o")
-        .arg("brute")
-        .arg("-std=c++17")
-        .status()
-        .expect("Failed to generate testcase :(");
-
-    let mut working: i32 = 0;
-    match fs::write(String::from(format!("tests/{}/testinfo", packname)), format!("0\n{}\n{}", timelimit, limit)) {
-        Ok(_) => {},
-        Err(_) => throw_error("Failed to write testinfo!"),
-    };
-
-    for i in 1..limit+1 {
-
-        let mut outp_i = Command::new("./gent");
-
-        let temp_i = outp_i.output().expect("uwu");
-        let stdout_i = String::from_utf8(temp_i.stdout).unwrap();
-
-        match fs::write(format!("tests/{}/{}.in", packname, i), stdout_i) {
-            Ok(_) => {},
-            Err(_) => throw_error("Failed to write testcase!"),
-        };
-
-        let mut outp_o = Command::new("./brute");
-
-        outp_o.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i)).unwrap());
-
-        let temp_o = outp_o.output().expect("uwu2");
-        let stdout_o = String::from_utf8(temp_o.stdout).unwrap();
-
-        match fs::write(format!("tests/{}/{}.out", packname, i), stdout_o) {
-            Ok(_) => {},
-            Err(_) => throw_error("Failed to write testcase!"),
-        };
-
-        println!("{}🗸 Generated testcase {} successfully!{}", color::Fg(color::Green), i, color::Fg(color::Reset));
-        working += 1;
-    }
+    println!("Compiling testing algorithm...");
+    working += 1;
+    
     match fs::remove_file("gent") {
         Ok(_) => {},
         Err(_) => throw_error("Failed to remove generator!"),
@@ -87,7 +44,7 @@ pub fn generate(args: &Vec<String>) {
         Ok(_) => {},
         Err(_) => throw_error("Failed to remove brute force algorithm!"),
     };
-    println!("Successfully generated {}{}/{}{} testcases.", color::Fg(color::Green), working, limit, color::Fg(color::Reset));
+    println!("Successfully generated {}/{} testcases.", working, limit);
 }
 
 pub fn test(args: &Vec<String>) {
@@ -96,7 +53,7 @@ pub fn test(args: &Vec<String>) {
     }
 
     let packname = &args[2];
-    println!("Compiling {}{}algorithm{}{}...", color::Fg(color::Yellow), style::Bold, color::Fg(color::Reset), style::Reset);
+    println!("Compiling algorithm...");
 
     Command::new("g++")
         .arg("-O3")
@@ -120,6 +77,8 @@ pub fn test(args: &Vec<String>) {
     let ccc = "1";
     let mut passed = 0;
 
+    let test_pool = Vec<i32>::new();
+
     if advanced_check == &ccc {
         let mut done = vec![false; amount as usize];
 
@@ -135,6 +94,7 @@ pub fn test(args: &Vec<String>) {
                 }
             }
             if can_exec {
+                test_pool.append(i - 1);
                 let result = test_tc(&mut log, packname, i - 1, timelimit);
                 match result {
                     0 => {
@@ -197,15 +157,15 @@ fn test_tc(log: &mut String, packname: &str, index: usize, timelimit: u128) -> i
 
     if stdout_output.trim() == expected.trim() {
         if tdiff <= timelimit {
-            println!("{}✅ Testcase {} passed!{}", color::Fg(color::Green), index, color::Fg(color::Reset));
+            println!("✅ Testcase {} passed!", index);
             0
         } else {
-            println!("{}⚠️ Time for testcase {} exceeded!{}", color::Fg(color::Yellow), index, color::Fg(color::Reset)); 
+            println!("⚠️ Time for testcase {} exceeded!", index); 
             log.push_str(format!("\n\nTestcase {}: Time limit exceeded ({}/{}ms)", index, tdiff, timelimit).as_str());
             2
         }
     } else {
-        println!("{}❌ Testcase {} failed!{}", color::Fg(color::Red), index, color::Fg(color::Reset));
+        println!("❌ Testcase {} failed!", index);
         log.push_str(format!("\n\nTestcase {}: Got \"{}\", expected \"{}\"", index, stdout_output, expected).as_str());
         1
     }
