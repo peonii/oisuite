@@ -33,9 +33,41 @@ pub fn generate(args: &Vec<String>) {
         .status()
         .expect("Failed to generate testcase :(");
 
-    println!("Compiling testing algorithm...");
-    working += 1;
+        let mut working: i32 = 0;
+        match fs::write(String::from(format!("tests/{}/testinfo", packname)), format!("0\n{}\n{}", timelimit, limit)) {
+            Ok(_) => {},
+            Err(_) => throw_error("Failed to write testinfo!"),
+        };
     
+        for i in 1..limit+1 {
+    
+            let mut outp_i = Command::new("./gent");
+    
+            let temp_i = outp_i.output().expect("uwu");
+            let stdout_i = String::from_utf8(temp_i.stdout).unwrap();
+    
+            match fs::write(format!("tests/{}/{}.in", packname, i), stdout_i) {
+                Ok(_) => {},
+                Err(_) => throw_error("Failed to write testcase!"),
+            };
+    
+            let mut outp_o = Command::new("./brute");
+    
+            outp_o.stdin(fs::File::open(format!("tests/{}/{}.in", packname, i)).unwrap());
+    
+            let temp_o = outp_o.output().expect("uwu2");
+            let stdout_o = String::from_utf8(temp_o.stdout).unwrap();
+    
+            match fs::write(format!("tests/{}/{}.out", packname, i), stdout_o) {
+                Ok(_) => {},
+                Err(_) => throw_error("Failed to write testcase!"),
+            };
+    
+            println!("🗸 Generated testcase {} successfully!", i);
+            working += 1;
+        }
+
+    println!("Compiling testing algorithm...");
     match fs::remove_file("gent") {
         Ok(_) => {},
         Err(_) => throw_error("Failed to remove generator!"),
@@ -77,8 +109,6 @@ pub fn test(args: &Vec<String>) {
     let ccc = "1";
     let mut passed = 0;
 
-    let test_pool = Vec<i32>::new();
-
     if advanced_check == &ccc {
         let mut done = vec![false; amount as usize];
 
@@ -94,7 +124,6 @@ pub fn test(args: &Vec<String>) {
                 }
             }
             if can_exec {
-                test_pool.append(i - 1);
                 let result = test_tc(&mut log, packname, i - 1, timelimit);
                 match result {
                     0 => {
