@@ -20,7 +20,7 @@ pub fn new(args: &Vec<String>) {
         match fs::copy(file.as_ref().unwrap().path(), format!("{}/{}", name, file.unwrap().file_name().into_string().unwrap())) {
             Ok(_) => {},
             Err(_) => {
-                throw_error("Failed to copy default files!");
+                println!("Couldn't copy file; file is either .git or you don't have sufficient permissions");
             }
         };
     }

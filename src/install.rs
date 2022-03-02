@@ -23,6 +23,7 @@ pub fn install() {
 
 # Default project configuration
 default_repo: https://www.github.com/querterdesu/oisuite-files
+solutions_repo: https://www.github.com/querterdesu/public-algo-question-repository
 
 
 # Made by Querter-chan#6666";

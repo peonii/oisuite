@@ -16,6 +16,7 @@ fn main() {
         "update" => oisuite::install::update(),
         "generate" => oisuite::testing::generate(&args),
         "test" => oisuite::testing::test(&args),
+        "getsolution" => oisuite::fetcher::get_solution(&args),
         _ => oisuite::throw_lerror("Invalid argument!")
     };
 }
