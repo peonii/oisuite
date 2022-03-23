@@ -1,13 +1,11 @@
 pub mod install;
 pub mod project;
 pub mod testing;
-pub mod fetcher;
 
 use std::process;
 pub use crate::install::*;
 pub use crate::project::*;
 pub use crate::testing::*;
-pub use crate::fetcher::*;
 
 pub fn print_help_text() {
     println!("LIST OF COMMANDS");
